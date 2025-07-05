@@ -1,22 +1,72 @@
 import { useState } from 'react'
-import Box from '../Box/Box'
 import Grid from '../Grid/Grid'
+import { solveSudoku } from '../Solver/Solver'
+import { Checker } from '../Checker/Checker';
+const emptyGrid =() => Array.from({ length: 9 },() => Array(9).fill(''));
+export default function Form() {
+  const [grid, setGrid] = useState(emptyGrid);
+  const [running, setRunning] = useState(false);
+  const [delay, setDelay] = useState(10);
+  const handleCellChange =(row, col, value) => {
+    setGrid(g => {
+      const next = g.map(r => [...r]);
+      next[row][col] = value;
+      return next;
+    })
+  }
+  const handleSolve = async() => {
+    if(running) return;
+    if(!await Checker(grid)){
+      alert("Invalid Sudoku!");
+      return;
+    }
+    setRunning(true);
+    await solveSudoku(
+      grid.map(r => [...r]),
+      newGrid => setGrid(newGrid.map(r => [...r])),
+      delay
+    )
+    setRunning(false);
+  }
+  const handleReset =() => {
+    if(running) return;
+    setGrid(emptyGrid());
+  }
 
-function Form() {
-  return (
-    <div className='flex flex-col items-center rounded-xl shadow-lg'>
-        <form className='flex flex-col items-center w-full' onSubmit={(e)=>{
-            e.preventDefault();
-        }}>
-            <Grid />
-            <div className="-mt-10 mb-10">
-              <button className="px-8 py-4 bg-blue-700 text-white font-bold rounded-lg shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)] hover:bg-blue-800 transition w-64 text-xl cursor-pointer">
-                Evaluate
-              </button>
-            </div>
-        </form>
+  return(
+    <div className="flex flex-col items-center p-4">
+      <Grid grid={grid} onCellChange={handleCellChange} />
+      <div className="mt-4 flex items-center space-x-2">
+        <label htmlFor="speed" className="font-medium">Speed:</label>
+        <input
+          id="speed"
+          type="range"
+          min={1}
+          max={1000}
+          step={10}
+          value={delay}
+          disabled={running}
+          onChange={e => setDelay(Number(e.target.value))}
+        />
+        <span>{delay} ms</span>
+      </div>
+      <div className="mt-4 flex space-x-4">
+        <button
+          onClick={handleSolve}
+          disabled={running}
+          className="px-6 py-2 bg-green-600 text-white rounded disabled:opacity-50"
+        >
+          {running ? 'Solving…' : 'Visualize Solve'}
+        </button>
+
+        <button
+          onClick={handleReset}
+          disabled={running}
+          className="px-6 py-2 bg-red-600 text-white rounded disabled:opacity-50"
+        >
+          Reset
+        </button>
+      </div>
     </div>
   )
 }
-
-export default Form
