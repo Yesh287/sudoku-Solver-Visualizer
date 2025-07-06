@@ -6,7 +6,7 @@ const emptyGrid =() => Array.from({ length: 9 },() => Array(9).fill(''));
 export default function Form() {
   const [grid, setGrid] = useState(emptyGrid);
   const [running, setRunning] = useState(false);
-  const [delay, setDelay] = useState(10);
+  const [delay, setDelay] = useState(100);
   const handleCellChange =(row, col, value) => {
     setGrid(g => {
       const next = g.map(r => [...r]);
@@ -41,7 +41,7 @@ export default function Form() {
         <input
           id="speed"
           type="range"
-          min={1}
+          min={10}
           max={1000}
           step={10}
           value={delay}
