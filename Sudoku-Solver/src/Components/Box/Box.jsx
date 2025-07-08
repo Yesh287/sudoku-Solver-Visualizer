@@ -8,6 +8,7 @@ export default function Box({ value, onChange }) {
       value={value}
       onChange={e => {
         const v = e.target.value.replace(/[^1-9]/g, '')
+        console.log(v);
         onChange(v)
       }}
     />

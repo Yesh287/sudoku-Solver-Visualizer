@@ -30,7 +30,7 @@ export default function Form() {
   }
   const handleReset =() => {
     if(running) return;
-    setGrid(emptyGrid());
+    setGrid(emptyGrid);
   }
 
   return(
